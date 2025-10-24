@@ -14,6 +14,7 @@ class CategoryFactory extends Factory
     {
         return [
             'name' => $this->faker->words(asText: true),
+            'description' => $this->faker->sentence(),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ];
