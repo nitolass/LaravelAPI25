@@ -9,6 +9,7 @@ use App\Models\Category;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
@@ -31,9 +32,17 @@ class CategoryController extends Controller
 
     public function store(StoreCategoryRequest $request)
     {
-        $category = Category::create($request->all());
+            $data = $request->all();
 
-        return new CategoryResource($category);
+            if ($request->hasFile('photo')) {
+                $file = $request->file('photo');
+                $name = Str::uuid() . '.' . $file->extension();
+                $file->storePubliclyAs('categories', $name, 'public');
+                $data['photo'] = $name;
+
+            }
+            $category = Category::create($data);
+            return new CategoryResource($category);
     }
 
     public function update(Category $category, StoreCategoryRequest $request)
