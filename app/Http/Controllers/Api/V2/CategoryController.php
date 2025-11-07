@@ -26,8 +26,9 @@ class CategoryController extends Controller
     {
         abort_if(! auth()->user()->tokenCan('categories-list'), 403);
 
-        return CategoryResource::collection(Category::all());
-    }
+        return CategoryResource::collection(Cache::rememberForever('categoriesForever', function () {
+            return Category::all();
+        }));    }
 
     public function show(Category $category)
     {

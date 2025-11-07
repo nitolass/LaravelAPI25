@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 /**
@@ -26,8 +27,9 @@ class CategoryController extends Controller
     {
         abort_if(! auth()->user()->tokenCan('categories-list'), 403);
 
-        return CategoryResource::collection(Category::where('id', '>', 5)->get());
-    }
+        return CategoryResource::collection(Cache::remember('categories', 60*60*24, function () {
+            return Category::where('id', '>', 5)->get();
+        }));    }
 
     public function list()
     {
